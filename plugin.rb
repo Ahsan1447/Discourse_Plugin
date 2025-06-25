@@ -9,7 +9,13 @@ gem "sentry-rails"
 
 enabled_site_setting :salla_serializers_enabled
 
+gem "sentry-ruby"
+gem "sentry-rails"
+
 after_initialize do
+  require 'sentry-ruby'
+  require 'sentry-rails'
+
   %w[
     basic_category_serializer_extension
     post_serializer_extension
