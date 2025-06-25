@@ -4,8 +4,8 @@
 # about: Add Salla serializers
 # version: 1.0
 # authors: Ahsan Afzal
-gem "sentry-ruby"
-gem "sentry-rails"
+gem "sentry-ruby", "5.11.0"
+gem "sentry-rails", "5.11.0"
 
 enabled_site_setting :salla_serializers_enabled
 
@@ -25,7 +25,7 @@ after_initialize do
   end
 
   if ENV['SENTRY_DSN'].present?
-    Sentry.init do |config|
+    ::Sentry.init do |config|
       config.dsn = ENV['SENTRY_DSN']
       config.environment = ENV['SENTRY_ENV'] || 'staging'
       config.breadcrumbs_logger = [:active_support_logger, :http_logger]
