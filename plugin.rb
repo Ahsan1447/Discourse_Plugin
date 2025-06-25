@@ -4,16 +4,27 @@
 # about: Add Salla serializers
 # version: 1.0
 # authors: Ahsan Afzal
-gem "sentry-ruby"
-gem "sentry-rails"
+gem "sentry-ruby", "~> 5.11.0"
+gem "sentry-rails", "~> 5.11.0"
 
 enabled_site_setting :salla_serializers_enabled
 
 require 'sentry-ruby'
 require 'sentry-rails'
 
-after_initialize do
+# Initialize Sentry early if DSN is present
+if ENV['SENTRY_DSN'].present?
+  Sentry.init do |config|
+    config.dsn = ENV['SENTRY_DSN']
+    config.environment = ENV['SENTRY_ENV'] || 'staging'
+    config.breadcrumbs_logger = [:active_support_logger, :http_logger]
+    config.send_default_pii = true
+    config.traces_sample_rate = 0.1
+    config.sample_rate = 0.1
+  end
+end
 
+after_initialize do
   %w[
     basic_category_serializer_extension
     post_serializer_extension
@@ -22,24 +33,6 @@ after_initialize do
   ].each do |file|
     require_relative "app/serializers/#{file}"
   end
-
-  if ENV['SENTRY_DSN'].present?
-    ::Sentry.init do |config|
-      config.dsn = ENV['SENTRY_DSN']
-      config.environment = ENV['SENTRY_ENV'] || 'staging'
-
-      # get breadcrumbs from logs
-      config.breadcrumbs_logger = [:active_support_logger, :http_logger]
-      # Add data like request headers and IP for users, if applicable;
-      # see https://docs.sentry.io/platforms/ruby/data-management/data-collected/ for more info
-      config.send_default_pii = true
-
-      config.traces_sample_rate = 0.1
-      config.sample_rate = 0.1
-
-    end
-  end
-
 
   require_relative "app/controllers/topics_controller.rb"
   load File.expand_path("app/config/routes.rb", __dir__)
