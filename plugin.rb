@@ -4,8 +4,8 @@
 # about: Add Salla serializers
 # version: 1.0
 # authors: Ahsan Afzal
-gem "sentry-ruby", "~> 5.11.0"
-gem "sentry-rails", "~> 5.11.0"
+gem "sentry-ruby"
+gem "sentry-rails"
 
 enabled_site_setting :salla_serializers_enabled
 
