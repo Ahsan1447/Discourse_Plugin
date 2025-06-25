@@ -13,16 +13,6 @@ require 'sentry-ruby'
 require 'sentry-rails'
 
 # Initialize Sentry early if DSN is present
-if ENV['SENTRY_DSN'].present?
-  Sentry.init do |config|
-    config.dsn = ENV['SENTRY_DSN']
-    config.environment = ENV['SENTRY_ENV'] || 'staging'
-    config.breadcrumbs_logger = [:active_support_logger, :http_logger]
-    config.send_default_pii = true
-    config.traces_sample_rate = 0.1
-    config.sample_rate = 0.1
-  end
-end
 
 after_initialize do
   %w[
@@ -34,6 +24,16 @@ after_initialize do
     require_relative "app/serializers/#{file}"
   end
 
+  if ENV['SENTRY_DSN'].present?
+    Sentry.init do |config|
+      config.dsn = ENV['SENTRY_DSN']
+      config.environment = ENV['SENTRY_ENV'] || 'staging'
+      config.breadcrumbs_logger = [:active_support_logger, :http_logger]
+      config.send_default_pii = true
+      config.traces_sample_rate = 0.1
+      config.sample_rate = 0.1
+    end
+  end
   require_relative "app/controllers/topics_controller.rb"
   load File.expand_path("app/config/routes.rb", __dir__)
 
