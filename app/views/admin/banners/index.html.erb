@@ -1,0 +1,26 @@
+<h1>Banners</h1>
+
+<div id="banners">
+  <%= render @banners %>
+</div>
+
+<%= form_with(model: Banner.new, url: admin_banners_path) do |form| %>
+  <div class="field">
+    <%= form.label :announcement %>
+    <%= form.text_field :announcement %>
+  </div>
+
+  <div class="field">
+    <%= form.label :button_text %>
+    <%= form.text_field :button_text %>
+  </div>
+
+  <div class="field">
+    <%= form.label :button_link %>
+    <%= form.text_field :button_link %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

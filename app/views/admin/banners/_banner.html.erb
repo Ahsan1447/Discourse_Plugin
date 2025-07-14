@@ -1,0 +1,19 @@
+<div id="<%= dom_id banner %>">
+  <p>
+    <strong>Announcement:</strong>
+    <%= banner.announcement %>
+  </p>
+
+  <p>
+    <strong>Button text:</strong>
+    <%= banner.button_text %>
+  </p>
+
+  <p>
+    <strong>Button link:</strong>
+    <%= banner.button_link %>
+  </p>
+
+  <%= link_to "Edit", edit_admin_banner_path(banner) %>
+  <%= link_to "Destroy", admin_banner_path(banner), method: :delete, data: { confirm: "Are you sure?" } %>
+</div>

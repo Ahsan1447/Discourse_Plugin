@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
-Discourse::Application.routes.append do
-  get "/t/:id/increment_count" => "salla_serializers/topics#increment_count"
+Salla::Engine.routes.draw do
+  namespace :admin do
+    resources :banners, only: [:index, :create, :update, :destroy]
+  end
+
+  get '/banner', to: 'banners#index'
 end
