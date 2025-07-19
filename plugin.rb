@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# name: salla-discourse-plugin
+# name: Discourse_Plugin
 # about: Merged plugin for Salla Community APIs and custom serializers
 # version: 1.1
 # authors: Ahsan Afzal
