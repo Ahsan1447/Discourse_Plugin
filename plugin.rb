@@ -20,7 +20,7 @@ require 'sentry-rails'
 after_initialize do
   # === SALLA COMMUNITY MODULE (from salla-community plugin) ===
   module ::SallaDiscoursePlugin
-    PLUGIN_NAME = "salla-discourse-plugin".freeze
+    PLUGIN_NAME = "Discourse_Plugin".freeze
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
