@@ -1,4 +1,32 @@
 en:
-  salla:
-    banner:
-      title: "Banner"
+  site_settings:
+    fixed_community_banner_enabled: "Enable Fixed Community Banner"
+    fixed_community_banner_enabled_help: "Enable or disable the fixed community banner feature"
+
+    fixed_community_banner_text: "Banner Text"
+    fixed_community_banner_text_help: "The text to display in the fixed community banner"
+
+    fixed_community_banner_link: "Call to Action Link"
+    fixed_community_banner_link_help: "The URL for the call to action button (optional)"
+
+    fixed_community_banner_cta_text: "Call to Action Text"
+    fixed_community_banner_cta_text_help: "The text to display on the call to action button"
+
+    fixed_community_banner_active: "Is Active?"
+    fixed_community_banner_active_help: "Whether the banner should be displayed to users"
+
+  js:
+    admin:
+      site_settings:
+        categories:
+          fixed_community_banner: "Fixed Community Banner"
+  category_custom_field:
+    post_view:
+      heading: "Post View Settings"
+      label: "Post View Layout"
+    tabs_view:
+      heading: "Tabs View Settings"
+      label: "Enable Tabs View"
+    user_can_create_post:
+      heading: "User Permissions"
+      label: "Users Can Create Posts" 

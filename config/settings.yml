@@ -2,3 +2,47 @@ plugins:
   salla_serializers_enabled:
     default: true
     client: true
+  enable_salla_community:
+    default: true
+    client: true
+    category: "salla_community"
+  fixed_community_banner_enabled:
+    default: true
+    client: true
+    category: "fixed_community_banner"
+  fixed_community_banner_text:
+      default: "Welcome to our community!"
+      client: true
+      textarea: true
+      category: "fixed_community_banner"
+  fixed_community_banner_link:
+      default: ""
+      client: true
+      category: "fixed_community_banner"
+  fixed_community_banner_cta_text:
+      default: "Learn More"
+      client: true
+      category: "fixed_community_banner"
+  fixed_community_banner_active:
+      default: false
+      client: true
+      category: "fixed_community_banner"
+  category_custom_field_enabled:
+    default: true
+    client: true
+  post_view_enabled:
+    default: 'list'
+    client: true
+    type: enum
+    choices:
+      - grid
+      - list
+  tabs_view_enabled:
+    default: true
+    client: true
+  user_can_create_post_enabled:
+    default: true
+    client: true
+  show_main_post_enabled:
+    default: false
+    client: true

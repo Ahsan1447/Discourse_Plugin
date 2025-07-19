@@ -1,0 +1,6 @@
+en:
+  site_settings:
+    enable_salla_community: Enable Salla Community APIs for notification counts and activity tracking.
+    category_custom_field_enabled: Enable your category custom field.
+    category_custom_field_name: Name of your category custom field.
+    category_custom_field_type: Type of your category custom field.

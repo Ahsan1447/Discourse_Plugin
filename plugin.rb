@@ -1,22 +1,108 @@
 # frozen_string_literal: true
 
-# name: salla-discourse
-# about: Official Salla integration with Discourse
-# version: 1.0.0
-# authors: Salla
-# url: https://www.salla.sa
+# name: salla-discourse-plugin
+# about: Merged plugin for Salla Community APIs and custom serializers
+# version: 1.1
+# authors: Ahsan Afzal
+
+gem "sentry-ruby", "5.11.0"
+gem "sentry-rails", "5.11.0"
+
+enabled_site_setting :salla_serializers_enabled
+enabled_site_setting :fixed_community_banner_enabled
+enabled_site_setting :category_custom_field_enabled
+enabled_site_setting :enable_salla_community
+register_asset 'stylesheets/common.scss'
+
+require 'sentry-ruby'
+require 'sentry-rails'
 
 after_initialize do
-  add_admin_route 'salla.banner.title', 'banner'
+  # === SALLA COMMUNITY MODULE (from salla-community plugin) ===
+  module ::SallaDiscoursePlugin
+    PLUGIN_NAME = "salla-discourse-plugin".freeze
 
-  Discourse::Application.routes.append do
-    mount ::Salla::Engine, at: '/salla'
-    get '/admin/plugins/salla/banner' => 'admin/banners#index', constraints: StaffConstraint.new
+    class Engine < ::Rails::Engine
+      engine_name PLUGIN_NAME
+      isolate_namespace SallaDiscoursePlugin
+    end
   end
 
-  register_asset "javascripts/discourse/templates/components/banner.hbs"
-  register_asset "javascripts/discourse/components/banner.js"
-  register_asset "stylesheets/banner.scss"
+  # Load notification counts controller
+  require_relative "app/controllers/notification_counts_controller"
 
-  Api::Application.instance.plugin_outlets.register_outlet('header-after-home-logo', 'banner')
+  # Set up SallaDiscoursePlugin routes
+  ::SallaDiscoursePlugin::Engine.routes.draw do
+    get "/count" => "notification_counts#count", :constraints => {format: /(json|rss)/,}
+    post "/activity_count" => "notification_counts#activity_count", :constraints => {format: /(json|rss)/,}
+  end
+
+  # Mount SallaDiscoursePlugin engine
+  Discourse::Application.routes.append { mount ::SallaDiscoursePlugin::Engine, at: "/notification_counts" }
+  
+  # Add cookie store patch
+  require_dependency 'action_dispatch/session/discourse_cookie_store'
+
+  module DiscourseCookieStorePatch
+    private
+    def set_cookie(request, session_id, cookie)
+      if Hash === cookie
+        cookie[:secure] = true if SiteSetting.force_https
+        unless SiteSetting.same_site_cookies == "Disabled"
+          cookie[:same_site] = SiteSetting.same_site_cookies
+        end
+      end
+      cookie[:domain] = ENV["COOKIE_DOMAIN"]
+      cookie[:path] = "/"
+      cookie_jar(request)[@key] = cookie
+    end
+  end
+
+  ActionDispatch::Session::DiscourseCookieStore.prepend(DiscourseCookieStorePatch)
+
+  # === SALLA SERIALIZERS FUNCTIONALITY (original plugin) ===
+  CUSTOM_FIELDS = {
+    'post_view' => { type: :string, choices: ['grid', 'list'], default: 'list' },
+    'tabs_view' => { type: :boolean, default: true },
+    'user_can_create_post' => { type: :boolean, default: true },
+    'show_main_post' => { type: :boolean, default: false }
+  }
+
+  # Load all extracted modules
+  require_relative "lib/salla_serializers/sentry_configuration"
+  require_relative "lib/salla_serializers/custom_fields_manager"
+  require_relative "lib/salla_serializers/plugin_initializer"
+
+
+  # Initialize Sentry
+  SallaSerializers::SentryConfiguration.initialize_sentry
+
+  # Load serializers
+  SallaSerializers::PluginInitializer.load_serializers
+
+  # Load patches and extensions
+  SallaSerializers::PluginInitializer.load_patches_and_extensions
+
+  # Load email interceptor
+  SallaSerializers::PluginInitializer.load_email_interceptor
+
+  require_relative "app/controllers/topics_controller.rb"
+  load File.expand_path("app/config/routes.rb", __dir__)
+  # Load Discourse Reactions patch if available
+  SallaSerializers::PluginInitializer.load_discourse_reactions_patch
+
+  # Load controllers and routes
+  SallaSerializers::PluginInitializer.load_controllers_and_routes
+
+  # Register custom field types
+  CUSTOM_FIELDS.each do |field_name, config|
+    register_category_custom_field_type(field_name, config[:type])
+  end
+
+  # Initialize custom fields
+  SallaSerializers::CustomFieldsManager.initialize_custom_fields
+
+  # Setup category defaults and preloading
+  SallaSerializers::CustomFieldsManager.setup_category_defaults
+  SallaSerializers::CustomFieldsManager.setup_preloading_and_serialization
 end

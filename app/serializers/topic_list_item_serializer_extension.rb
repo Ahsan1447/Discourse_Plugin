@@ -4,13 +4,14 @@ TopicListItemSerializer.class_eval do
   attributes :category,
              :topic_creator,
              :cooked,
-             :first_post_details
+             :first_post_details,
+						 :category_topic
 	def category
     {
       id: category_id,
       name: object.category&.name,
       only_admin_can_post: object.category&.groups&.exists?(name: "admins"),
-			emoji: object.category&.id ? "https://community.salla.com/forum/#{object.category.id}.png" : nil
+			emoji: object.category&.uploaded_logo ? Discourse.base_url_no_prefix + object.category.uploaded_logo.url.to_s : nil
     }
   end
 
@@ -35,7 +36,11 @@ TopicListItemSerializer.class_eval do
       is_post_liked: is_post_liked?,
       is_post_bookmarked: is_post_bookmarked?
     }
-  end
+	end
+
+	def category_topic
+		object.is_category_topic?
+	end
 
 	private
 

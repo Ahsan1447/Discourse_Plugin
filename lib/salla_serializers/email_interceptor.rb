@@ -36,7 +36,7 @@ module SallaSerializers
 
       return content unless from_url.present? && to_url.present?
 
-      asset_pattern = /\.(#{ASSET_EXTENSIONS.join('|')})(\?.*)?(?=["'])/
+      asset_pattern = /(?:https?:\/\/|\/)[^\s"']+\.(#{ASSET_EXTENSIONS.join('|')})(\?[^\s"']*)?/
 
       content = content.gsub(%r{(#{Regexp.escape(from_url)}[^\s"'<>]*)}) do |url|
         # Skip URLs containing /email/unsubscribe/
