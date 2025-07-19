@@ -99,10 +99,60 @@ after_initialize do
     register_category_custom_field_type(field_name, config[:type])
   end
 
-  # Initialize custom fields
-  SallaSerializers::CustomFieldsManager.initialize_custom_fields
+  # Initialize custom fields - add getter and setter methods to Category class
+  CUSTOM_FIELDS.each do |field_name, config|
+    # Add getter method with proper boolean conversion and defaults
+    add_to_class(:category, field_name.to_sym) do
+      value = custom_fields[field_name]
+      if config[:type] == :boolean
+        # Convert string boolean to actual boolean, with default fallback
+        if value.nil?
+          config[:default]
+        else
+          value == "t" || value == true
+        end
+      else
+        # Return default if value is nil
+        value.nil? ? config[:default] : value
+      end
+    end
 
-  # Setup category defaults and preloading
-  SallaSerializers::CustomFieldsManager.setup_category_defaults
-  SallaSerializers::CustomFieldsManager.setup_preloading_and_serialization
+    # Add setter method - ensure false values are stored as "f"
+    add_to_class(:category, "#{field_name}=") do |value|
+      if config[:type] == :boolean
+        # Always store boolean values as strings, even when false
+        # This ensures false values are preserved and not removed
+        custom_fields[field_name] = value ? "t" : "f"
+      else
+        # For non-boolean fields, store the value as-is
+        custom_fields[field_name] = value
+      end
+    end
+  end
+
+  # Set defaults for new categories
+  on(:category_created) do |category|
+    CUSTOM_FIELDS.each do |field_name, config|
+      if category.custom_fields[field_name].nil?
+        if config[:type] == :boolean
+          category.custom_fields[field_name] = config[:default] ? "t" : "f"
+        else
+          category.custom_fields[field_name] = config[:default]
+        end
+        category.save_custom_fields
+      end
+    end
+  end
+
+  # Preload all custom fields
+  CUSTOM_FIELDS.keys.each do |field_name|
+    Site.preloaded_category_custom_fields << field_name
+  end
+
+  # Add to serializers
+  CUSTOM_FIELDS.keys.each do |field_name|
+    add_to_serializer(:site_category, field_name.to_sym) do
+      object.send(field_name)
+    end
+  end
 end
