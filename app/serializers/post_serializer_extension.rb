@@ -55,6 +55,8 @@ PostSerializer.class_eval do
   end
 
   def is_post_liked?
+    return false unless defined?(DiscourseReactions::ReactionUser)
+    
     DiscourseReactions::ReactionUser.where(
       user_id: scope.user&.id,
       post_id: object&.topic&.first_post&.id

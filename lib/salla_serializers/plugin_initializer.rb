@@ -55,7 +55,6 @@ module SallaSerializers
 
     def self.load_controllers_and_routes
       require_relative "../../app/controllers/topics_controller.rb"
-      require_relative "../../app/controllers/notification_counts_controller.rb"
       load File.expand_path("../../app/config/routes.rb", __dir__)
 
       # Load banner controller

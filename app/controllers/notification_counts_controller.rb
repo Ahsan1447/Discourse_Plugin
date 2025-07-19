@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module SallaSerializers
+module SallaDiscoursePlugin
   class NotificationCountsController < ::ApplicationController
     skip_before_action :verify_authenticity_token, only: :activity_count
 
@@ -43,8 +43,8 @@ module SallaSerializers
           topic = action.target_topic
           topic&.closed == false && topic&.deleted_at.nil?
         end,
-        likes: DiscourseReactions::ReactionUser.where(user_id: user.id).count,
-        answers: user.topics.select {  |t| t.closed == false && t.deleted_at.nil? && t.custom_fields[::DiscourseSolved::ACCEPTED_ANSWER_POST_ID_CUSTOM_FIELD].present? }.count,
+        likes: defined?(DiscourseReactions::ReactionUser) ? DiscourseReactions::ReactionUser.where(user_id: user.id).count : 0,
+        answers: defined?(DiscourseSolved) ? user.topics.select {  |t| t.closed == false && t.deleted_at.nil? && t.custom_fields[::DiscourseSolved::ACCEPTED_ANSWER_POST_ID_CUSTOM_FIELD].present? }.count : 0,
         bookmarks: user.bookmarks.where(bookmarkable_type: "Post").count do |bookmark|
           topic = bookmark.bookmarkable
           topic&.deleted_at.nil?

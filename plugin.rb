@@ -28,7 +28,7 @@ after_initialize do
     end
   end
 
-  # Load notification counts controller
+  # Load notification counts controller in the correct module context
   require_relative "app/controllers/notification_counts_controller"
 
   # Set up SallaDiscoursePlugin routes

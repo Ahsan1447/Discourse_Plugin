@@ -45,6 +45,8 @@ TopicListItemSerializer.class_eval do
 	private
 
 		def is_post_liked?
+			return false unless defined?(DiscourseReactions::ReactionUser)
+			
 			DiscourseReactions::ReactionUser
 			.where(user_id: scope.user&.id, post_id: object&.first_post&.id)
 			.exists?
