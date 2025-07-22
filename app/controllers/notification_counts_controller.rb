@@ -39,7 +39,7 @@ module SallaDiscoursePlugin
         end,
         topics: user.topics
                  .select { |topic| topic.closed == false && topic.deleted_at.nil? }.count,
-        posts: posts: user.user_actions
+        posts: user.user_actions
         .joins("INNER JOIN topics ON topics.id = user_actions.target_topic_id")
         .where(action_type: 5, "topics.closed": false, "topics.deleted_at": nil)
         .count,
