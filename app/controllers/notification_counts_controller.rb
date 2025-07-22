@@ -39,10 +39,10 @@ module SallaDiscoursePlugin
         end,
         topics: user.topics
                  .select { |topic| topic.closed == false && topic.deleted_at.nil? }.count,
-        posts: user.user_actions.where(action_type: 5).count do |action|
-          topic = action.target_topic
-          topic&.closed == false && topic&.deleted_at.nil?
-        end,
+        posts: posts: user.user_actions
+        .joins("INNER JOIN topics ON topics.id = user_actions.target_topic_id")
+        .where(action_type: 5, "topics.closed": false, "topics.deleted_at": nil)
+        .count,
         likes: defined?(DiscourseReactions::ReactionUser) ? DiscourseReactions::ReactionUser.where(user_id: user.id).count : 0,
         answers: defined?(DiscourseSolved) ? user.topics.select {  |t| t.closed == false && t.deleted_at.nil? && t.custom_fields[::DiscourseSolved::ACCEPTED_ANSWER_POST_ID_CUSTOM_FIELD].present? }.count : 0,
         bookmarks: user.bookmarks.where(bookmarkable_type: "Post").count do |bookmark|

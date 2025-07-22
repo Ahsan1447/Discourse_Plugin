@@ -13,6 +13,8 @@ enabled_site_setting :fixed_community_banner_enabled
 enabled_site_setting :category_custom_field_enabled
 enabled_site_setting :enable_salla_community
 register_asset 'stylesheets/common.scss'
+register_asset 'javascripts/discourse/initializers/category-custom-field-initializer.js.es6'
+register_asset 'javascripts/discourse/lib/category-custom-field.js.es6'
 
 require 'sentry-ruby'
 require 'sentry-rails'
