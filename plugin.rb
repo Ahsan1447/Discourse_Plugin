@@ -13,13 +13,14 @@ enabled_site_setting :fixed_community_banner_enabled
 enabled_site_setting :category_custom_field_enabled
 enabled_site_setting :enable_salla_community
 register_asset 'stylesheets/common.scss'
+
 require 'sentry-ruby'
 require 'sentry-rails'
 
 after_initialize do
   # === SALLA COMMUNITY MODULE (from salla-community plugin) ===
   module ::SallaDiscoursePlugin
-    PLUGIN_NAME = "Discourse_Plugin".freeze
+    PLUGIN_NAME = "salla_discourse_plugin".freeze
 
     class Engine < ::Rails::Engine
       engine_name PLUGIN_NAME
